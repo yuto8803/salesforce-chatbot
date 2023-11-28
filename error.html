@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>認証失敗</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 50px;
+      }
+
+      .error-message {
+        color: red;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>認証失敗</h1>
+    <p class="error-message">
+      入力されたIDまたはパスワードが正しくありません。
+    </p>
+    <p>
+      もう一度お試しいただくか、問題が解決しない場合はサポートまでご連絡ください。
+    </p>
+    <button onclick="goBack()">戻る</button>
+
+    <script>
+      function goBack() {
+        window.history.back();
+      }
+    </script>
+  </body>
+</html>
