@@ -2,116 +2,71 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>HTML and Chat Sample</title>
+  <title>HTML Sample</title>
   <link rel="stylesheet" href="style.css">
   <script type="text/javascript" src="sample.js"></script>
-  <style>
-    .popup {
-      display: none;
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      border: 1px solid #ddd;
-      padding: 20px;
-      background-color: white;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
-      z-index: 1000;
-    }
-
-    .show {
-      display: block;
-    }
-  </style>
 </head>
 <body>
-  <!-- ログインポップアップ -->
-  <div id="login-popup" class="popup">
-    <input type="text" id="username" name="username"><br>
-    <input type="password" id="password" name="password"><br>
-    <input type="button" value="OK" onclick="checkLogin()">
-  </div>
+<meta http-equiv="content-type" charset="utf-8">
 
-  <div id="main-content">
-    <form name="parent_window">
-      <b>親ウィンドウ</b>
-      <p>姓：Doe</p>
-      <p>名：John</p>
-      <p>メール：john.doe@salesforce.com</p>
-    </form>
-  </div>
+<form name="parent_window">
+<b>親ウィンドウ</b>
+<p>姓：Doe</p>
+<p>名：John</p>
+<p>メール：john.doe@salesforce.com</p>
+</form>
+<script type='text/javascript' src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
+<script type='text/javascript'>
+  // 親ウィンドウから姓と名を取得する関数
+  function getPrepopulatedFields() {
+    var lastName = document.querySelector('form[name="parent_window"] p:nth-child(2)').textContent.split('：')[1];
+    var firstName = document.querySelector('form[name="parent_window"] p:nth-child(3)').textContent.split('：')[1];
+    var email = document.querySelector('form[name="parent_window"] p:nth-child(4)').textContent.split('：')[1];
 
-  <script type='text/javascript' src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
-  <script type='text/javascript'>
-    function getPrepopulatedFields() {
-      var lastName = document.querySelector('form[name="parent_window"] p:nth-child(2)').textContent.split('：')[1];
-      var firstName = document.querySelector('form[name="parent_window"] p:nth-child(3)').textContent.split('：')[1];
-      var email = document.querySelector('form[name="parent_window"] p:nth-child(4)').textContent.split('：')[1];
-
-      return {
-        FirstName: firstName,
-        LastName: lastName,
-        Email: email
-      };
-    }
-
-    var initESW = function(gslbBaseURL) {
-      embedded_svc.settings.displayHelpButton = true; // ヘルプボタンの表示
-      embedded_svc.settings.language = ''; // 言語設定
-
-      // チャットの事前入力項目の設定
-      embedded_svc.settings.prepopulatedPrechatFields = getPrepopulatedFields();
-
-      embedded_svc.settings.enabledFeatures = ['LiveAgent'];
-      embedded_svc.settings.entryFeature = 'LiveAgent';
-
-      embedded_svc.init(
-        'https://repro2.my.salesforce.com',
-        'https://repro2.my.site.com/testhelp',
-        gslbBaseURL,
-        '00D2v000002LcIJ',
-        'TestChatGroupVer_1',
-        {
-          baseLiveAgentContentURL: 'https://c.la1-core1.sfdc-mchho0.salesforceliveagent.com/content',
-          deploymentId: '572A700000000qI',
-          buttonId: '573A700000000rk',
-          baseLiveAgentURL: 'https://d.la1-core1.sfdc-mchho0.salesforceliveagent.com/chat',
-          eswLiveAgentDevName: 'TestChatGroupVer_1',
-          isOfflineSupportEnabled: true
-        }
-      );
+    return {
+      FirstName: firstName,
+      LastName: lastName,
+      Email: email
     };
+  }
 
-    // ログインポップアップのスクリプト
-    window.onload = function() {
-      document.getElementById("login-popup").classList.add("show");
+  var initESW = function(gslbBaseURL) {
+    embedded_svc.settings.displayHelpButton = true; //または false
+    embedded_svc.settings.language = ''; //たとえば、「en」または「en-US」を入力します
+
+    // ボットの事前入力項目の設定
+    embedded_svc.settings.prepopulatedPrechatFields = getPrepopulatedFields();
+
+    embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+    embedded_svc.settings.entryFeature = 'LiveAgent';
+
+		embedded_svc.init(
+			'https://repro2.my.salesforce.com',
+			'https://repro2.my.site.com/testhelp',
+			gslbBaseURL,
+			'00D2v000002LcIJ',
+			'TestChatGroupVer_1',
+			{
+				baseLiveAgentContentURL: 'https://c.la1-core1.sfdc-mchho0.salesforceliveagent.com/content',
+				deploymentId: '572A700000000qI',
+				buttonId: '573A700000000rk',
+				baseLiveAgentURL: 'https://d.la1-core1.sfdc-mchho0.salesforceliveagent.com/chat',
+				eswLiveAgentDevName: 'TestChatGroupVer_1',
+				isOfflineSupportEnabled: true
+			}
+		);
+	};
+
+  if (!window.embedded_svc) {
+    var s = document.createElement('script');
+    s.setAttribute('src', 'https://repro2.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+    s.onload = function() {
+      initESW(null);
     };
-
-    function checkLogin() {
-      var username = document.getElementById("username").value;
-      var password = document.getElementById("password").value;
-      var validUsername = "user123";
-      var validPassword = "pass123";
-
-      if (username === validUsername && password === validPassword) {
-        document.getElementById("login-popup").classList.remove("show");
-        initESW(null);
-      } else {
-        window.location.href = "error.html";
-      }
-    }
-
-    // Salesforceチャットスクリプトの初期化
-    if (!window.embedded_svc) {
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://repro2.my.salesforce.com/embeddedservice/5.0/esw.min.js');
-      s.onload = function() {
-        initESW(null);
-      };
-      document.body.appendChild(s);
-    } else {
-      initESW('https://service.force.com');
-    }
-  </script>
+    document.body.appendChild(s);
+  } else {
+    initESW('https://service.force.com');
+  }
+</script>
 </body>
 </html>
