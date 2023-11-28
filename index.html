@@ -17,6 +17,20 @@
 </form>
 <script type='text/javascript' src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
 <script type='text/javascript'>
+
+	// ID/PASS認証
+	window.onload = () =>
+	fetch(
+	  "https://script.google.com/macros/s/AKfycbxSAAzfQWnYuuRD5hxjL6n_2xvK84Z6DTdjHQDtUKuhIjBniP9tahKoRvd-Npyyf--U/exec",
+	  {
+		method: "POST",
+		headers: { "Content-Type": "application/x-www-form-urlencoded" },
+		body: encodeURI(`id=${window.prompt("ID", "")}&pass=${window.prompt("PASS", "")}`),
+	  }
+	).catch((error) => {
+	  window.location.href = "error.html"
+	})
+	
   // 親ウィンドウから姓と名を取得する関数
   function getPrepopulatedFields() {
     var lastName = document.querySelector('form[name="parent_window"] p:nth-child(2)').textContent.split('：')[1];
