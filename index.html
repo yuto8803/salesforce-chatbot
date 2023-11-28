@@ -7,20 +7,20 @@
   <script type="text/javascript" src="sample.js"></script>
   <style>
     .popup {
-        display: none;
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        border: 1px solid #ddd;
-        padding: 20px;
-        background-color: white;
-        box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
-        z-index: 1000;
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid #ddd;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+      z-index: 1000;
     }
 
     .show {
-        display: block;
+      display: block;
     }
   </style>
 </head>
@@ -44,11 +44,42 @@
   <script type='text/javascript' src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
   <script type='text/javascript'>
     function getPrepopulatedFields() {
-      // 省略...
+      var lastName = document.querySelector('form[name="parent_window"] p:nth-child(2)').textContent.split('：')[1];
+      var firstName = document.querySelector('form[name="parent_window"] p:nth-child(3)').textContent.split('：')[1];
+      var email = document.querySelector('form[name="parent_window"] p:nth-child(4)').textContent.split('：')[1];
+
+      return {
+        FirstName: firstName,
+        LastName: lastName,
+        Email: email
+      };
     }
 
     var initESW = function(gslbBaseURL) {
-      // 省略...
+      embedded_svc.settings.displayHelpButton = true; // ヘルプボタンの表示
+      embedded_svc.settings.language = ''; // 言語設定
+
+      // チャットの事前入力項目の設定
+      embedded_svc.settings.prepopulatedPrechatFields = getPrepopulatedFields();
+
+      embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+      embedded_svc.settings.entryFeature = 'LiveAgent';
+
+      embedded_svc.init(
+        'https://repro2.my.salesforce.com',
+        'https://repro2.my.site.com/testhelp',
+        gslbBaseURL,
+        '00D2v000002LcIJ',
+        'TestChatGroupVer_1',
+        {
+          baseLiveAgentContentURL: 'https://c.la1-core1.sfdc-mchho0.salesforceliveagent.com/content',
+          deploymentId: '572A700000000qI',
+          buttonId: '573A700000000rk',
+          baseLiveAgentURL: 'https://d.la1-core1.sfdc-mchho0.salesforceliveagent.com/chat',
+          eswLiveAgentDevName: 'TestChatGroupVer_1',
+          isOfflineSupportEnabled: true
+        }
+      );
     };
 
     // ログインポップアップのスクリプト
@@ -64,24 +95,7 @@
 
       if (username === validUsername && password === validPassword) {
         document.getElementById("login-popup").classList.remove("show");
-        // チャット初期化の呼び出し
         initESW(null);
       } else {
         window.location.href = "error.html";
-      }
-    }
-
-    // Salesforceチャットスクリプトの初期化
-    if (!window.embedded_svc) {
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://repro2.my.salesforce.com/embeddedservice/5.0/esw.min.js');
-      s.onload = function() {
-        // initESW(null); // この行はコメントアウトまたは削除
-      };
-      document.body.appendChild(s);
-    } else {
-      // initESW('https://service.force.com'); // この行はコメントアウトまたは削除
-    }
-  </script>
-</body>
-</html>
+     
