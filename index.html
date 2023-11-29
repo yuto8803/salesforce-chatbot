@@ -18,20 +18,19 @@
 <script type='text/javascript' src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
 <script type='text/javascript'>
 
-	// ID/PASS認証
-	function idPassAuth() {
-		fetch(
-		  "https://script.google.com/macros/s/AKfycbxSAAzfQWnYuuRD5hxjL6n_2xvK84Z6DTdjHQDtUKuhIjBniP9tahKoRvd-Npyyf--U/exec",
-		  {
-			method: "POST",
-			headers: { "Content-Type": "application/x-www-form-urlencoded" },
-			body: encodeURI(`id=${window.prompt("ID", "")}&pass=${window.prompt("PASS", "")}`),
-		  }
-		).catch((error) => {
-		  window.location.href = "error.html"
-		})
-	}
-	window.addEventListener('load', idPassAuth);
+  // ID/PASS認証用の関数
+  function authenticateUser() {
+    fetch(
+      "https://script.google.com/macros/s/AKfycbxSAAzfQWnYuuRD5hxjL6n_2xvK84Z6DTdjHQDtUKuhIjBniP9tahKoRvd-Npyyf--U/exec",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: encodeURI(`id=${window.prompt("ID", "")}&pass=${window.prompt("PASS", "")}`),
+      }
+    ).catch((error) => {
+      window.location.href = "error.html";
+    });
+  }
 
   // 親ウィンドウから姓と名を取得する関数
   function getPrepopulatedFields() {
@@ -46,6 +45,7 @@
     };
   }
 
+  // チャットウィジェット初期化関数
   var initESW = function(gslbBaseURL) {
     embedded_svc.settings.displayHelpButton = true; //または false
     embedded_svc.settings.language = ''; //たとえば、「en」または「en-US」を入力します
@@ -56,33 +56,38 @@
     embedded_svc.settings.enabledFeatures = ['LiveAgent'];
     embedded_svc.settings.entryFeature = 'LiveAgent';
 
-		embedded_svc.init(
-			'https://repro2.my.salesforce.com',
-			'https://repro2.my.site.com/testhelp',
-			gslbBaseURL,
-			'00D2v000002LcIJ',
-			'TestChatGroupVer_1',
-			{
-				baseLiveAgentContentURL: 'https://c.la1-core1.sfdc-mchho0.salesforceliveagent.com/content',
-				deploymentId: '572A700000000qI',
-				buttonId: '573A700000000rk',
-				baseLiveAgentURL: 'https://d.la1-core1.sfdc-mchho0.salesforceliveagent.com/chat',
-				eswLiveAgentDevName: 'TestChatGroupVer_1',
-				isOfflineSupportEnabled: true
-			}
-		);
-	};
+    embedded_svc.init(
+      'https://repro2.my.salesforce.com',
+      'https://repro2.my.site.com/testhelp',
+      gslbBaseURL,
+      '00D2v000002LcIJ',
+      'TestChatGroupVer_1',
+      {
+        baseLiveAgentContentURL: 'https://c.la1-core1.sfdc-mchho0.salesforceliveagent.com/content',
+        deploymentId: '572A700000000qI',
+        buttonId: '573A700000000rk',
+        baseLiveAgentURL: 'https://d.la1-core1.sfdc-mchho0.salesforceliveagent.com/chat',
+        eswLiveAgentDevName: 'TestChatGroupVer_1',
+        isOfflineSupportEnabled: true
+      }
+    );
+  };
 
-  if (!window.embedded_svc) {
-    var s = document.createElement('script');
-    s.setAttribute('src', 'https://repro2.my.salesforce.com/embeddedservice/5.0/esw.min.js');
-    s.onload = function() {
-      initESW(null);
-    };
-    document.body.appendChild(s);
-  } else {
-    initESW('https://service.force.com');
-  }
+  // window.onloadイベントリスナを追加
+  window.addEventListener('load', function() {
+    authenticateUser();
+
+    if (!window.embedded_svc) {
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://repro2.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+      s.onload = function() {
+        initESW(null);
+      };
+      document.body.appendChild(s);
+    } else {
+      initESW('https://service.force.com');
+    }
+  });
 </script>
 </body>
 </html>
